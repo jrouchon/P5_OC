@@ -80,22 +80,59 @@ function createImage(productData) {
 
 }
 
-//listen click event, get id quantity and color in local storage, sent them to cart somehow
+
 const button = document.querySelector("#addToCart");
 button.addEventListener("click", addToCartEvent);
 
+function getOrder(color, quantity) {
+    let order = {
+        id: id,
+        color: color,
+        quantity: quantity,
+        price: localStorage.lsprice
+    }
+    if (order.id == null || order.color == null || order.quantity == null || order.price == null) {
+        alert("something went wrong please refresh this page"); // do a function pop up
+        return;
+    }
+        
+    addToLocalStorage(order);
+}
+
+function addToLocalStorage(order) {
+    let i = localStorage.length;
+    
+
+    if (i > 1) { //on passe sur la commande du ls
+        let isFound = false;
+        for (j = 1; j < i; j++) {
+            let ordered = JSON.parse(localStorage.getItem(j));
+            if (ordered.id == order.id && ordered.color == order.color) { //si on trouve le même on modif la quantité
+                isFound = true;
+                let k = parseInt(ordered.quantity) + parseInt(order.quantity);
+                order.quantity = k.toString();
+                localStorage.removeItem(j);
+                localStorage.setItem(j, JSON.stringify(order));
+            }
+        }
+        if (isFound == false) // si on n'a pas de commande identique
+            localStorage.setItem(i, JSON.stringify(order));
+    }
+    else {
+        localStorage.setItem(i, JSON.stringify(order));
+        console.log("op :",order.price);
+    }
+}
+
 function addToCartEvent() {
-    console.log("click");
+    //console.log("click");
     const color = document.querySelector("#colors").value;
     const quantity = document.querySelector("#quantity").value;
     if (color == "" || quantity == "0") {
         alert("no color or quantity selected "); // do a function pop up
     }
     else {
-
-        localStorage.id = id;
-        localStorage.color = color;
-        localStorage.quantity = quantity;
+        getOrder(color, quantity);
 
         window.location.href = "cart.html" //perd le localstorage sur firefox
     }
