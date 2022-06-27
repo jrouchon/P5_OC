@@ -2,9 +2,9 @@ fetch("http://localhost:3000/api/products")
     .then(function (res) { return res.json() })
     .then(function (data) {
         //console.log(data)
-        addProducts(data)
+        displayProducts(data)
     })
-    .catch(function (err) { console.error(err, "-impossible de recuperer les produits de l api") }); //gestion d'erreur
+    .catch(function (err) { console.error(err, "err: impossible de recuperer les produits de l api") }); //gestion d'erreur
 
 /*
 class Product {
@@ -32,35 +32,34 @@ function getProducts(data) {
 }
 */
 
-function addProducts(data) {
+function displayProducts(data) {
     console.log(data);
+    for (let i = 0; i < data.length; i++) {
+        let a = createA(data[i]._id);
+        let article = createArticle(data[i].imageUrl, data[i].altTxt, data[i].name, data[i].description);
 
-    let id = data[0]._id;
-    let anchor = makeAnchor(id);
-
-    let img = data[0].imageUrl;
-    let alt = data[0].altTxt;
-    let name = data[0].name;
-    let description = data[0].description;
-    let article = getArticle(img, alt, name, description); //param data seulement
-
-    appendChildren(anchor);
-    anchor.appendChild(article); //a remplacer
+        appendChildren(a);
+        appendChildrenParent(article, a);
+    }
+    
 }
 
-function makeAnchor(id) {
+function createA(_id) {
     const anchor = document.createElement("a");
-    anchor.href = "./product.html?id=" + id;
+    anchor.href = "./product.html?id=" + _id;
     return anchor;
 }
 
-function appendChildren(anchor) {
+//gestion err a finir
+function appendChildren(a) {
     const items = document.querySelector("#items")
     if (items != null) {
-        items.appendChild(anchor);
+        items.appendChild(a);
+    }
+    else {
+        console.error("err: no parent in appendChildren");
     }
 }
-
 
 //relation parent enfant html
 function appendChildrenParent(child, parent) {
@@ -68,25 +67,11 @@ function appendChildrenParent(child, parent) {
         parent.appendChild(child);
     }
     else {
-        console.error("can't appendChild child or parent missing");
+        console.error("err: can't appendChild children or parent missing");
     }
 }
 
-//display
-/*
-function displayProduct() {
-    //getLink();
-    //appendchild a faire en une seule fonction qui prend parent et enfant en param
-    //getArticle;
-}*/
-
-/*
-function getLink() {
-    //
-}
-*/
-
-function getArticle(imageUrl, altTxt, name, description) {
+function createArticle(imageUrl, altTxt, name, description) {
     const article = document.createElement("article");
     const image = getImg(imageUrl, altTxt);
     const h3 = getH3(name);
@@ -100,9 +85,6 @@ function getArticle(imageUrl, altTxt, name, description) {
     return article;
 
     // no gestion erreur
-    //getImg
-    //getH3
-    //getP
 }
 
 function getImg(imageUrl, altTxt) {
@@ -132,4 +114,6 @@ function getP(description) {
     return p;
     // no gestion erreur
 }
+
+
 
