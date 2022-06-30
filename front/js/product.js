@@ -5,6 +5,8 @@ const paramsString = window.location.search;
 const searchParams = new URLSearchParams(paramsString); //array
 const id = searchParams.get("id");
 //console.log({ id });
+let imgSrc;
+let imgAlt;
 
 //localStorage.clear();
 
@@ -55,10 +57,11 @@ function getTitle(productData) {
     title.textContent = productData.name;
 }
 
+
 function getImg(imageUrl, altTxt) {
     const img = document.createElement("img")
-    img.src = imageUrl;
-    img.alt = altTxt;
+    imgSrc = imageUrl;
+    imgAlt = altTxt;
     return img;
     // no gestion erreur
 }
@@ -77,20 +80,25 @@ function appendChildItemImg(child) {
 function createImage(productData) {
     let img = getImg(productData.imageUrl, productData.altTxt);
     appendChildItemImg(img);
-
+    img.src = productData.imageUrl;
+    img.alt = productData.altTxt;
 }
 
 
 const button = document.querySelector("#addToCart");
 button.addEventListener("click", addToCartEvent);
 
-function getOrder(color, quantity) {
+function getOrder(name, color, quantity) {
     let order = {
         id: id,
+        name: name,
         color: color,
         quantity: quantity,
-        price: localStorage.lsprice
+        price: localStorage.lsprice,
+        imgSrc: imgSrc,
+        imgAlt: imgAlt
     }
+    //console.log(imgSrc, imgAlt);
     if (order.id == null || order.color == null || order.quantity == null || order.price == null) {
         alert("something went wrong please refresh this page"); // do a function pop up
         return;
@@ -120,19 +128,20 @@ function addToLocalStorage(order) {
     }
     else {
         localStorage.setItem(i, JSON.stringify(order));
-        console.log("op :",order.price);
+        //console.log("op :",order.price);
     }
 }
 
 function addToCartEvent() {
     //console.log("click");
+    const name = document.querySelector("#title").textContent;
     const color = document.querySelector("#colors").value;
     const quantity = document.querySelector("#quantity").value;
     if (color == "" || quantity == "0") {
         alert("no color or quantity selected "); // do a function pop up
     }
     else {
-        getOrder(color, quantity);
+        getOrder(name, color, quantity);
 
         window.location.href = "cart.html" //perd le localstorage sur firefox
     }
