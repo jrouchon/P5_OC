@@ -57,6 +57,7 @@ function createcontentSettings(order, i) { // a diviser
     deleteP.classList.add("deleteItem");
     deleteP.textContent = 'Supprimer';
     divSettingsDelete.appendChild(deleteP);
+    deleteP.addEventListener("click", () => deleteProduct(i));
     //
 
     return divSettings;
@@ -93,6 +94,8 @@ function createArticle(order, i) {
 
     const article = document.createElement("article");
     article.classList.add("cart__item");
+    article.dataset.id = i;
+    article.dataset.color = order.color;
 
     cartItems.appendChild(article);
     
@@ -111,7 +114,6 @@ function getTotalQuantity() {
     for (j = 1; j < i; j++) {
         let order = JSON.parse(localStorage.getItem(j));
         totalQuantity = totalQuantity + parseInt(order.quantity);
-        //console.log(totalQuantity);
     }
     quantity.textContent = totalQuantity;
 }
@@ -125,7 +127,6 @@ function getTotalPrice() {
         let semiPrice = 0;
         semiPrice = parseInt(order.price) * parseInt(order.quantity)
         total = total + semiPrice;
-        //console.log(total);
     }
     totalPrice.textContent = total;
 }
@@ -135,41 +136,46 @@ function getLocalStorage() {
     for (j = 1; j < i; j++) {
         let order = JSON.parse(localStorage.getItem(j));
         createArticle(order, j);
-        //console.log(order);
     }
     getTotalQuantity();
     getTotalPrice();
 
-    //let quantity = document.querySelectorAll(".itemQuantity");
-    //console.log(quantity);
-        //quantity.forEach(element => {
-            //element.addEventListener('change', quantityChange);
-    //});
-    //let quantity = document.getElementsByName(".itemQuantity");
-    //console.log(quantity);
-    //quantity.addEventListener("change", quantityChange());
 }
-
-
-//modif quantité et suppression 
-
-//const quantity = document.querySelector(".itemQuantity");
-//console.log(quantity);
-//quantity.addEventListener("change", quantityChange());
 
 /*document.querySelector(".itemQuantity").forEach(quantities => {
     quantities.addEventListener("change", quantityChange());
 })*/
 
-
 //const deleteI = document.querySelector(".deleteItem");
 //deleteI.addEventListener("click", deleteItem);
 
 function quantityChange(order, i, v) {
-    console.log("order :", order);
-    console.log("i :", i);
-    //console.log("e :", e);
-    console.log("v :", v);
-    //localStorage.removeItem(compteurid);
-    //localStorage.setItem(compteurid, JSON.stringify(object));
+    
+    let temp = order;
+    temp.quantity = v;
+    localStorage.removeItem(i);
+    localStorage.setItem(i, JSON.stringify(temp));
+
+    getTotalQuantity();
+    getTotalPrice();
+
 }
+
+function deleteProduct(i) {
+    //console.log("i :", i);
+    localStorage.removeItem(i);
+    for (j = 1; j <= localStorage.length; j++) {
+        if (j > i) {
+            //console.log({ j });
+            let temp = JSON.parse(localStorage.getItem(j));
+            localStorage.removeItem(j);
+            localStorage.setItem((j - 1), JSON.stringify(temp));
+        }
+    }
+    //querySelector(section id cart item) remove child(data-id i)
+
+    getTotalQuantity();
+    getTotalPrice();
+}
+
+
