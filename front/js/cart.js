@@ -57,7 +57,7 @@ function createcontentSettings(order, i) { // a diviser
     deleteP.classList.add("deleteItem");
     deleteP.textContent = 'Supprimer';
     divSettingsDelete.appendChild(deleteP);
-    deleteP.addEventListener("click", () => deleteProduct(i));
+    deleteP.addEventListener("click", () => deleteProduct(order, i));
     //
 
     return divSettings;
@@ -161,18 +161,25 @@ function quantityChange(order, i, v) {
 
 }
 
-function deleteProduct(i) {
-    //console.log("i :", i);
-    localStorage.removeItem(i);
+function deleteProduct(order, articleIndex) {
+    let productToDelete = 0;
+    for (i = 1; i < localStorage.length ; i++) {
+        let temp = JSON.parse(localStorage.getItem(i))
+        if ((order.id == temp.id) && (order.color == temp.color)) { 
+            productToDelete = i;
+        }
+    }
+    localStorage.removeItem(productToDelete);
     for (j = 1; j <= localStorage.length; j++) {
-        if (j > i) {
-            //console.log({ j });
+        if (j > productToDelete) {
             let temp = JSON.parse(localStorage.getItem(j));
             localStorage.removeItem(j);
             localStorage.setItem((j - 1), JSON.stringify(temp));
         }
     }
-    //querySelector(section id cart item) remove child(data-id i)
+
+    let article = document.querySelector(`article[data-id="${articleIndex}"]`);
+    article.remove();
 
     getTotalQuantity();
     getTotalPrice();
