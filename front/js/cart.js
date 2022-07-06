@@ -140,6 +140,7 @@ function getLocalStorage() {
     getTotalQuantity();
     getTotalPrice();
 
+
 }
 
 /*document.querySelector(".itemQuantity").forEach(quantities => {
@@ -186,3 +187,82 @@ function deleteProduct(order, articleIndex) {
 }
 
 
+
+//formulaire de commande 
+/**
+ *
+ * Expects request to contain:
+ * contact: {
+ *   firstName: string,
+ *   lastName: string,
+ *   address: string,
+ *   city: string,
+ *   email: string
+ * }
+ * products: [string] <-- array of product _id
+ *
+ */
+
+const orderButton = document.getElementById("order")
+orderButton.addEventListener("click", (e) => submitOrder(e));
+
+function submitOrder(e) {
+    //console.log("clicked");
+    e.preventDefault();
+
+    let i = localStorage.length;
+    if (i === 1) {
+        alert("your cart is empty! You can't buy the void, please select an item!");
+    }
+
+    const order = getFinalOrder();
+
+    fetch("http://localhost:3000/api/products/order", {
+        method: "POST",
+        body: JSON.stringify(order),
+        headers: {
+            "Content-Type": "application/json"  //pourquoi????
+        }
+    })
+        .then((res) => res.json())
+        .then((data) => console.log(data))
+
+}
+
+function getFinalOrder() {
+   /* contact: {
+  firstName: string,
+  lastName: string,
+  address: string,
+  city: string,
+  email: string
+            }
+  products: [string]*/
+
+    const formInput = document.querySelector(".cart__order__form");
+    //console.log("formInput :", form.elements);
+    const firstName = formInput.elements.firstName.value;
+    const lastName = formInput.elements.lastName.value;
+    const address = formInput.elements.address.value;
+    const city = formInput.elements.city.value;
+    const email = formInput.elements.email.value;
+
+    const order = {
+        contact: {
+            firstName: firstName,
+            lastName: lastName,
+            address: address,
+            city: city,
+            email: email
+        },
+        products: ["107fb5b75607497b96722bda5b504926"]
+    }
+    console.log(order);
+    return order;
+}
+
+function getFinalID() {
+    //boucle sur le id du ls
+    const id = "107fb5b75607497b96722bda5b504926";
+    return id;
+}
