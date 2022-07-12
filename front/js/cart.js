@@ -1,5 +1,6 @@
 //création du panier
 
+
 getLocalStorage();
 
 function createContentDescription(order) {
@@ -42,9 +43,7 @@ function createcontentSettings(order, i) { // a diviser
     inputQ.max = "100";
     inputQ.value = order.quantity;
 
-    inputQ.addEventListener("change", () => quantityChange(order, i, inputQ.value)); // eventlistener sur la création mais pas après (id object, new quantity)(order, )
-
-    //inputQ.addEventListener("change", console.log("change")); // eventlistener sur la création mais pas après
+    inputQ.addEventListener("change", () => quantityChange(order, i, inputQ.value)); 
 
     divSettingsQuantity.appendChild(inputQ);
 
@@ -98,7 +97,6 @@ function createArticle(order, i) {
     article.dataset.color = order.color;
 
     cartItems.appendChild(article);
-    
 
     const divImage = createDivImage(order);
     const content = createContent(order, i);
@@ -139,16 +137,8 @@ function getLocalStorage() {
     }
     getTotalQuantity();
     getTotalPrice();
-
-
 }
 
-/*document.querySelector(".itemQuantity").forEach(quantities => {
-    quantities.addEventListener("change", quantityChange());
-})*/
-
-//const deleteI = document.querySelector(".deleteItem");
-//deleteI.addEventListener("click", deleteItem);
 
 function quantityChange(order, i, v) {
     
@@ -186,7 +176,41 @@ function deleteProduct(order, articleIndex) {
     getTotalPrice();
 }
 
+const orderButton = document.getElementById("order")
+orderButton.addEventListener("click", (e) => submitOrder(e));
 
+function submitOrder(e) {
+    e.preventDefault();
+
+    let i = localStorage.length;
+    if (i === 1) {
+        alert("your cart is empty! You can't buy the void, please select an item!");
+    }
+    const isValid = checkForm();
+    if (isValid === false) {
+        console.log("checkForm false should stop and don't post");
+        return;
+    }
+
+    const order = getFinalOrder();
+
+    fetch("http://localhost:3000/api/products/order", {
+        method: "POST",
+        body: JSON.stringify(order),
+        headers: {
+            "Content-Type": "application/json"  
+        }
+    })
+        .then((res) => res.json())
+        .then((data) => {
+            const orderId = data.orderId;
+            window.location.href = "confirmation.html" + "?orderId=" + orderId
+        })
+
+        .catch(function (err) { console.error(err, "-problème au niveau de la commande") });
+
+
+}
 
 //formulaire de commande 
 /**
@@ -203,44 +227,10 @@ function deleteProduct(order, articleIndex) {
  *
  */
 
-const orderButton = document.getElementById("order")
-orderButton.addEventListener("click", (e) => submitOrder(e));
-
-function submitOrder(e) {
-    //console.log("clicked");
-    e.preventDefault();
-
-    let i = localStorage.length;
-    if (i === 1) {
-        alert("your cart is empty! You can't buy the void, please select an item!");
-    }
-
-    const order = getFinalOrder();
-
-    fetch("http://localhost:3000/api/products/order", {
-        method: "POST",
-        body: JSON.stringify(order),
-        headers: {
-            "Content-Type": "application/json"  //pourquoi????
-        }
-    })
-        .then((res) => res.json())
-        .then((data) => console.log(data))
-
-}
-
 function getFinalOrder() {
-   /* contact: {
-  firstName: string,
-  lastName: string,
-  address: string,
-  city: string,
-  email: string
-            }
-  products: [string]*/
 
     const formInput = document.querySelector(".cart__order__form");
-    //console.log("formInput :", form.elements);
+
     const firstName = formInput.elements.firstName.value;
     const lastName = formInput.elements.lastName.value;
     const address = formInput.elements.address.value;
@@ -255,14 +245,59 @@ function getFinalOrder() {
             city: city,
             email: email
         },
-        products: ["107fb5b75607497b96722bda5b504926"]
+        products: getFinalID()
     }
-    console.log(order);
+    //console.log(order);
     return order;
 }
 
 function getFinalID() {
-    //boucle sur le id du ls
-    const id = "107fb5b75607497b96722bda5b504926";
+    const id = []
+    for (i = 1; i < localStorage.length; i++) {
+        let tmp = JSON.parse(localStorage.getItem(i));
+        id.push(tmp.id);
+    }
     return id;
+}
+
+function checkForm() {
+    let ret;
+
+    ret = isFormEmpty()
+    if (ret === false) {
+        return false;
+    }
+
+    ret = isEmailValid()
+    if (ret === false) {
+        return false;
+    }
+
+}
+
+function isFormEmpty() {
+    const formInput = document.querySelector(".cart__order__form");
+    inputs = formInput.querySelectorAll("input")
+    let error = 0;
+    inputs.forEach((input) => {
+        if (input.value === "") {
+            error += 1;
+            return
+        }
+    })
+    if (error > 0) {
+        alert("Please fill all the field");
+        return false;
+    }
+    return true;
+}
+
+function isEmailValid() {
+    const email = document.querySelector("#email")
+    const regex = /^[A-Za-z0-9+_.-]+@+[A-Za-z]+[.]+[a-z]{2,3}$/
+    if (regex.test(email.value) === false) {
+        alert("your email is invalid");
+        return false;
+    }
+    return true;
 }
