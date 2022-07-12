@@ -176,6 +176,7 @@ function deleteProduct(order, articleIndex) {
     getTotalPrice();
 }
 
+
 const orderButton = document.getElementById("order")
 orderButton.addEventListener("click", (e) => submitOrder(e));
 
@@ -268,6 +269,12 @@ function checkForm() {
         return false;
     }
 
+    ret = isNameValid()
+    if (ret === false) {
+        return false;
+    }
+    
+
     ret = isEmailValid()
     if (ret === false) {
         return false;
@@ -299,5 +306,22 @@ function isEmailValid() {
         alert("your email is invalid");
         return false;
     }
+    return true;
+}
+
+
+function isNameValid() {
+    const firstName = document.querySelector("#firstName").value;
+    const lastName = document.querySelector("#lastName").value;
+    const regex = /^[A-Za-z-]+$/
+    if (regex.test(firstName) === false) {
+        alert("your first name is invalid");
+        return false;
+    }
+    if (regex.test(lastName) === false) {
+        alert("your last name is invalid");
+        return false;
+    }
+
     return true;
 }
