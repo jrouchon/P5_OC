@@ -1,39 +1,11 @@
 fetch("http://localhost:3000/api/products")
     .then(function (res) { return res.json() })
     .then(function (data) {
-        //console.log(data)
         displayProducts(data)
     })
     .catch(function (err) { console.error(err, "err: impossible de recuperer les produits de l api") }); //gestion d'erreur
 
-/*
-class Product {
-    constructor(_id, name, description, imageUrl, altTxt, colors, price) {
-        this._id = _id;
-        this.name = name;
-        this.description = description;
-        this.imageUrl = imageUrl;
-        this.altTxt = altTxt;
-        this.colors = colors;
-        this.price = price;
-    }
-}*/
-
-//me recup array de class 
-/*
-function getProducts(data) {
-    console.log(data);
-
-    let products = [];
-    for (let i = 0; i < data.length; i++) {
-        products.push(new Product(data[i]._id, data[i].name, data[i].description, data[i].imageUrl, data[i].altTxt, data[i].colors, data[i].price));
-    }
-    console.log("products :",products);
-}
-*/
-
 function displayProducts(data) {
-    console.log(data);
     for (let i = 0; i < data.length; i++) {
         let a = createA(data[i]._id);
         let article = createArticle(data[i].imageUrl, data[i].altTxt, data[i].name, data[i].description);
@@ -75,7 +47,6 @@ function createArticle(imageUrl, altTxt, name, description) {
     const article = document.createElement("article");
     const image = getImg(imageUrl, altTxt);
     const h3 = getH3(name);
-    //console.log("name :", name, "h3 :", h3);
     const p = getP(description);
 
     article.appendChild(image);

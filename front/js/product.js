@@ -1,19 +1,15 @@
 
 const paramsString = window.location.search;
-//console.log({ paramsString });
 
-const searchParams = new URLSearchParams(paramsString); //array
+const searchParams = new URLSearchParams(paramsString); 
 const id = searchParams.get("id");
-//console.log({ id });
 let imgSrc;
 let imgAlt;
 
-//localStorage.clear();
 
 fetch(`http://localhost:3000/api/products/${id}`) //`` permet de composer avec variables
     .then(function (res) { return res.json() })
     .then(function (data) {
-        //console.log(data)
         fillProduct(data);
     })
     .catch(function (err) { console.error(err, "-impossible de recuperer ce produit de l api") });
@@ -24,7 +20,7 @@ function fillProduct(productData) {
     createImage(productData);
     getTitle(productData);
     getDescription(productData);
-    getPrice(productData); //local storage
+    getPrice(productData);
     createColorOption(productData);
 
 }
@@ -57,16 +53,13 @@ function getTitle(productData) {
     title.textContent = productData.name;
 }
 
-
 function getImg(imageUrl, altTxt) {
     const img = document.createElement("img")
     imgSrc = imageUrl;
     imgAlt = altTxt;
     return img;
-    // no gestion erreur
 }
 
-//item__img > img
 function appendChildItemImg(child) {
     const parent = document.querySelector(".item__img")
     if (parent != null) {
@@ -98,9 +91,8 @@ function getOrder(name, color, quantity) {
         imgSrc: imgSrc,
         imgAlt: imgAlt
     }
-    //console.log(imgSrc, imgAlt);
     if (order.id == null || order.color == null || order.quantity == null || order.price == null) {
-        alert("something went wrong please refresh this page"); // do a function pop up
+        alert("something went wrong please refresh this page");
         return;
     }
         
@@ -128,22 +120,20 @@ function addToLocalStorage(order) {
     }
     else {
         localStorage.setItem(i, JSON.stringify(order));
-        //console.log("op :",order.price);
     }
 }
 
 function addToCartEvent() {
-    //console.log("click");
     const name = document.querySelector("#title").textContent;
     const color = document.querySelector("#colors").value;
     const quantity = document.querySelector("#quantity").value;
     if (color == "" || quantity == "0") {
-        alert("no color or quantity selected "); // do a function pop up
+        alert("no color or quantity selected "); 
     }
     else {
         getOrder(name, color, quantity);
 
-        window.location.href = "cart.html" //perd le localstorage sur firefox
+        window.location.href = "cart.html" 
     }
 
 }

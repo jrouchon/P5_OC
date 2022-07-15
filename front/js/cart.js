@@ -1,5 +1,3 @@
-//création du panier
-
 
 getLocalStorage();
 
@@ -22,14 +20,10 @@ function createContentDescription(order) {
     return divDescription;
 }
 
-function createcontentSettings(order, i) { // a diviser 
-    const divSettings = document.createElement("div");
-    divSettings.classList.add("cart__item__content__settings");
-
-    //
+function createDivSettingsQuantity(order, i) {
     const divSettingsQuantity = document.createElement("div");
+
     divSettingsQuantity.classList.add("cart__item__content__settings__quantity");
-    divSettings.appendChild(divSettingsQuantity);
 
     const quantityP = document.createElement("p");
     quantityP.textContent = 'Qt\u00e9 : ';
@@ -43,21 +37,38 @@ function createcontentSettings(order, i) { // a diviser
     inputQ.max = "100";
     inputQ.value = order.quantity;
 
-    inputQ.addEventListener("change", () => quantityChange(order, i, inputQ.value)); 
+    inputQ.addEventListener("change", () => quantityChange(order, i, inputQ.value));
 
     divSettingsQuantity.appendChild(inputQ);
 
-    //
+    return divSettingsQuantity;
+}
+
+function createDivSettingsDelete(order, i) {
     const divSettingsDelete = document.createElement("div");
     divSettingsDelete.classList.add("cart__item__content__settings__delete");
-    divSettings.appendChild(divSettingsDelete);
 
     const deleteP = document.createElement("p");
     deleteP.classList.add("deleteItem");
     deleteP.textContent = 'Supprimer';
+
     divSettingsDelete.appendChild(deleteP);
+
     deleteP.addEventListener("click", () => deleteProduct(order, i));
-    //
+
+    return divSettingsDelete;
+}
+
+function createcontentSettings(order, i) { 
+    const divSettings = document.createElement("div");
+    divSettings.classList.add("cart__item__content__settings");
+
+
+    const divSettingsQuantity = createDivSettingsQuantity(order, i);
+    divSettings.appendChild(divSettingsQuantity);
+
+    const divSettingsDelete = createDivSettingsDelete(order, i);
+    divSettings.appendChild(divSettingsDelete);
 
     return divSettings;
 }
@@ -248,7 +259,6 @@ function getFinalOrder() {
         },
         products: getFinalID()
     }
-    //console.log(order);
     return order;
 }
 
@@ -322,6 +332,5 @@ function isNameValid() {
         alert("your last name is invalid");
         return false;
     }
-
     return true;
 }
