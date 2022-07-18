@@ -7,18 +7,33 @@ function createContentDescription(order) {
     divDescription.classList.add("cart__item__content__description");
 
     const h2 = document.createElement("h2");
-    h2.textContent = order.name
+    h2.textContent = order.name;
+    divDescription.appendChild(h2);
+
     const p = document.createElement("p");
     p.textContent = order.color;
-
-    const p2 = document.createElement("p");
-    p2.textContent = order.price + ' \u20ac';
-
-    divDescription.appendChild(h2);
     divDescription.appendChild(p);
-    divDescription.appendChild(p2);
+
+    //console.log(divDescription);
+
+    getPrice(order, divDescription);
 
     return divDescription;
+}
+
+async function getPrice(order, divDescription) {
+    const id = order.id;
+    let fetched = await fetch(`http://localhost:3000/api/products/${id}`)
+        .then(function (res) { return res.json() })
+        .catch(function (err) { console.error(err, "-impossible de recuperer ce produit de l api") });
+    let price = await fetched.price;
+
+    const p2 = document.createElement("p");
+    p2.textContent = price + ' \u20ac';
+
+    divDescription.appendChild(p2);
+
+    getTotalPrice();
 }
 
 //creat div elem, set it with proper class, fill it with a created p and a created input for his quantity and append them,
@@ -127,7 +142,7 @@ function getTotalQuantity() {
     let quantity = document.querySelector("#totalQuantity");
     let totalQuantity = 0;
     let i = localStorage.length;
-    for (j = 1; j < i; j++) {
+    for (j = 1; j <= i; j++) {
         let order = JSON.parse(localStorage.getItem(j));
         totalQuantity = totalQuantity + parseInt(order.quantity);
     }
@@ -137,26 +152,30 @@ function getTotalQuantity() {
 //add all price from localStorage, and display it in the element queried first
 function getTotalPrice() {
     let totalPrice = document.querySelector("#totalPrice");
+
+    let prices = document.querySelectorAll(".cart__item__content__description");
     let total = 0;
     let i = localStorage.length;
-    for (j = 1; j < i; j++) {
+    for (j = 1; j <= i; j++) {
         let order = JSON.parse(localStorage.getItem(j));
         let semiPrice = 0;
-        semiPrice = parseInt(order.price) * parseInt(order.quantity)
+        let tmpPrice = prices[j-1].lastElementChild.textContent
+
+        semiPrice = parseInt(tmpPrice) * parseInt(order.quantity)
         total = total + semiPrice;
     }
     totalPrice.textContent = total;
 }
 
-//get all element in localStorage except element [0] who is lsPrice, get total quantity and price
+//get all element in localStorage, get total quantity and price
 function getLocalStorage() {
     let i = localStorage.length;
-    for (j = 1; j < i; j++) {
+    for (j = 1; j <= i; j++) {
         let order = JSON.parse(localStorage.getItem(j));
         createArticle(order, j);
     }
     getTotalQuantity();
-    getTotalPrice();
+    //getTotalPrice();
 }
 
 //get new quantity value (v), remove old order and set new order with the same index key (i), get new quantity and price
@@ -173,17 +192,18 @@ function quantityChange(order, i, v) {
 
 //find index key of the product to delete, delete it, 
 //for every element with bigger index, remove it and replace it with index - 1
-//remove dom article with the deleted element index, get new price and quantity
+//remove dom article with the deleted element index, get new price and quantity by reloading
 function deleteProduct(order, articleIndex) {
     let productToDelete = 0;
-    for (i = 1; i < localStorage.length ; i++) {
+    let len = localStorage.length;
+    for (i = 1; i <= len; i++) {
         let temp = JSON.parse(localStorage.getItem(i))
         if ((order.id == temp.id) && (order.color == temp.color)) { 
             productToDelete = i;
         }
     }
     localStorage.removeItem(productToDelete);
-    for (j = 1; j <= localStorage.length; j++) {
+    for (j = 1; j <= len; j++) {
         if (j > productToDelete) {
             let temp = JSON.parse(localStorage.getItem(j));
             localStorage.removeItem(j);
@@ -194,8 +214,7 @@ function deleteProduct(order, articleIndex) {
     let article = document.querySelector(`article[data-id="${articleIndex}"]`);
     article.remove();
 
-    getTotalQuantity();
-    getTotalPrice();
+    document.location.reload();
 }
 
 //add an event listener on click on order button 

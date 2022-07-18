@@ -43,8 +43,8 @@ function createColorOption(productData) {
 //set this price to price dom element queried before
 function getPrice(productData) {
     const price = document.querySelector("#price");
-    localStorage.setItem ("lsprice", productData.price);
-    price.textContent = localStorage.lsprice;
+    //localStorage.setItem ("lsprice", productData.price);
+    price.textContent = productData.price;
 }
 
 //query dom elem, set his textcontent to product description passed in param
@@ -58,7 +58,6 @@ function getTitle(productData) {
     const title = document.querySelector("#title");
     title.textContent = productData.name;
 }
-
 
 
 //query parent with item__img class, append it his child passed in param
@@ -96,11 +95,11 @@ function getOrder(name, color, quantity) {
         name: name,
         color: color,
         quantity: quantity,
-        price: localStorage.lsprice,
+        //price: localStorage.lsprice,
         imgSrc: imgSrc,
         imgAlt: imgAlt
     }
-    if (order.id == null || order.color == null || order.quantity == null || order.price == null) {
+    if (order.id == null || order.color == null || order.quantity == null) {
         alert("something went wrong please refresh this page");
         return;
     }
@@ -111,6 +110,7 @@ function getOrder(name, color, quantity) {
 //or create a new ordered element
 function addToLocalStorage(order) {
     let i = localStorage.length;
+    i += 1;
     if (i > 1) { //on passe sur la commande du ls
         let isFound = false;
         for (j = 1; j < i; j++) {
