@@ -1,6 +1,6 @@
 Projet N°5 réalisé dans le cadre de la formation Développeur Web d'OpenClassrooms.
 
-Développer le back-end d'une appli, le dossier front-end étant fourni.
+Intégrer dynamiquement dans un dossier front, les éléments d'une API à partir d'un back-end fourni.
 
 Le dossier back permet de faire tourner l'api contenant les données des produits.
 
